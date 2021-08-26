@@ -67,8 +67,7 @@ impl<ReqBody> Service<Request<ReqBody>> for ServeDir {
         // build and validate the path
         let path = req.uri().path();
         let path = path.trim_start_matches('/');
-        let path_decoded = percent_decode(path.as_ref()).decode_utf8_lossy().to_string();
-        let path = path_decoded.as_str();
+        let path = percent_decode(path.as_ref()).decode_utf8_lossy();
 
         let mut full_path = self.base.clone();
         for seg in path.split('/') {
