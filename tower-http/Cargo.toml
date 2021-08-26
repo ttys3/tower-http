@@ -21,6 +21,7 @@ http-body = "0.4.1"
 pin-project = "1"
 tower-layer = "0.3"
 tower-service = "0.3"
+percent-encoding = "2.1.0"
 
 # optional dependencies
 async-compression = { version = "0.3", optional = true, features = ["tokio"] }
