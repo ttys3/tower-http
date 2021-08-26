@@ -52,7 +52,7 @@ where
         self: Pin<&mut Self>,
         cx: &mut Context<'_>,
     ) -> Poll<Option<Result<Self::Data, Self::Error>>> {
-        let mut buf = BytesMut::new();
+        let mut buf = BytesMut::with_capacity(1024*1024);
         let read = ready!(poll_read_buf(self.project().inner, cx, &mut buf)?);
 
         if read == 0 {
