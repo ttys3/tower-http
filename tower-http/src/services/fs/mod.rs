@@ -13,6 +13,10 @@ use std::{
 use tokio::io::AsyncRead;
 use tokio_util::io::poll_read_buf;
 
+use tokio_stream::StreamExt;
+use tokio_util::io::ReaderStream;
+use futures_util::Stream;
+
 mod serve_dir;
 mod serve_file;
 
@@ -31,13 +35,18 @@ pub use self::{
 #[derive(Debug)]
 pub struct AsyncReadBody<T> {
     #[pin]
-    inner: T,
+    reader: ReaderStream<T>,
 }
 
-impl<T> AsyncReadBody<T> {
+impl<T> AsyncReadBody<T>
+where
+    T: AsyncRead,
+{
     /// Create a new [`AsyncReadBody`] wrapping the given reader.
     fn new(read: T) -> Self {
-        Self { inner: read }
+        Self {
+            reader: ReaderStream::new(read),
+        }
     }
 }
 
@@ -52,14 +61,7 @@ where
         self: Pin<&mut Self>,
         cx: &mut Context<'_>,
     ) -> Poll<Option<Result<Self::Data, Self::Error>>> {
-        let mut buf = BytesMut::with_capacity(1024*1024);
-        let read = ready!(poll_read_buf(self.project().inner, cx, &mut buf)?);
-
-        if read == 0 {
-            Poll::Ready(None)
-        } else {
-            Poll::Ready(Some(Ok(buf.freeze())))
-        }
+        self.project().reader.poll_next(cx)
     }
 
     fn poll_trailers(
