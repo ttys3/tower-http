@@ -5,7 +5,7 @@ use futures_core::Stream;
 use futures_util::ready;
 use http::{HeaderMap, HeaderValue};
 use http_body::Body;
-use pin_project::pin_project;
+use pin_project_lite::pin_project;
 use std::{
     io,
     pin::Pin,
@@ -125,11 +125,12 @@ pub(crate) trait DecorateAsyncRead {
 }
 
 /// `Body` that has been decorated by an `AsyncRead`
-#[pin_project]
+pin_project! {
 pub(crate) struct WrapBody<M: DecorateAsyncRead> {
     #[pin]
     pub(crate) read: M::Output,
 }
+    }
 
 impl<M: DecorateAsyncRead> WrapBody<M> {
     #[allow(dead_code)]
@@ -211,10 +212,11 @@ where
 }
 
 // When https://github.com/hyperium/http-body/pull/36 is merged we can remove this
-#[pin_project]
+pin_project! {
 pub(crate) struct BodyIntoStream<B> {
     #[pin]
     body: B,
+}
 }
 
 #[allow(dead_code)]
@@ -255,11 +257,12 @@ where
     }
 }
 
-#[pin_project]
+pin_project! {
 pub(crate) struct StreamErrorIntoIoError<S, E> {
     #[pin]
     inner: S,
     error: Option<E>,
+}
 }
 
 impl<S, E> StreamErrorIntoIoError<S, E> {

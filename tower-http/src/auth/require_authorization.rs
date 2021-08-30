@@ -116,7 +116,7 @@ use http::{
     Request, Response, StatusCode,
 };
 use http_body::Body;
-use pin_project::pin_project;
+use pin_project_lite::pin_project;
 use std::{
     fmt,
     future::Future,
@@ -280,11 +280,12 @@ where
 }
 
 /// Response future for [`RequireAuthorization`].
-#[pin_project]
+pin_project! {
 pub struct ResponseFuture<F, B> {
     #[pin]
     kind: Kind<F, B>,
 }
+    }
 
 impl<F, B> ResponseFuture<F, B> {
     fn future(future: F) -> Self {
@@ -300,11 +301,13 @@ impl<F, B> ResponseFuture<F, B> {
     }
 }
 
-#[pin_project(project = KindProj)]
+pin_project! {
+#[project = KindProj]
 enum Kind<F, B> {
     Future(#[pin] F),
     Error(Option<Response<B>>),
 }
+    }
 
 impl<F, B, E> Future for ResponseFuture<F, B>
 where

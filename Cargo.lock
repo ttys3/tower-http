@@ -1823,7 +1823,7 @@ dependencies = [
  "mime_guess",
  "once_cell",
  "percent-encoding",
- "pin-project",
+ "pin-project-lite",
  "tokio",
  "tokio-util",
  "tower",

@@ -5,7 +5,7 @@ use crate::compression_utils::{supports_transparent_compression, BoxError, WrapB
 use futures_util::ready;
 use http::{header, HeaderMap, HeaderValue, Response};
 use http_body::Body;
-use pin_project::pin_project;
+use pin_project_lite::pin_project;
 use std::{
     future::Future,
     pin::Pin,
@@ -15,13 +15,14 @@ use std::{
 /// Response future of [`Compression`].
 ///
 /// [`Compression`]: super::Compression
-#[pin_project]
+pin_project! {
 #[derive(Debug)]
 pub struct ResponseFuture<F> {
     #[pin]
     pub(crate) inner: F,
     pub(crate) encoding: Encoding,
 }
+    }
 
 impl<F, B, E> Future for ResponseFuture<F>
 where

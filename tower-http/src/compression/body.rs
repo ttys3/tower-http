@@ -14,7 +14,7 @@ use bytes::{Buf, Bytes};
 use futures_util::ready;
 use http::HeaderMap;
 use http_body::Body;
-use pin_project::pin_project;
+use pin_project_lite::pin_project;
 use std::{
     io,
     pin::Pin,
@@ -25,10 +25,12 @@ use tokio_util::io::StreamReader;
 /// Response body of [`Compression`].
 ///
 /// [`Compression`]: super::Compression
-#[pin_project]
+pin_project! {
 pub struct CompressionBody<B>(#[pin] pub(crate) BodyInner<B>)
 where
     B: Body;
+
+    }
 
 impl<B> CompressionBody<B>
 where
@@ -120,7 +122,8 @@ where
     }
 }
 
-#[pin_project(project = BodyInnerProj)]
+pin_project! {
+#[project = BodyInnerProj]
 pub(crate) enum BodyInner<B>
 where
     B: Body,
@@ -133,6 +136,7 @@ where
     Brotli(#[pin] WrapBody<BrotliEncoder<B>>),
     Identity(#[pin] B),
 }
+    }
 
 impl<B> Body for CompressionBody<B>
 where

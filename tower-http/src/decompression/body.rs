@@ -12,7 +12,7 @@ use bytes::{Buf, Bytes};
 use futures_util::ready;
 use http::HeaderMap;
 use http_body::Body;
-use pin_project::pin_project;
+use pin_project_lite::pin_project;
 use std::task::Context;
 use std::{io, pin::Pin, task::Poll};
 use tokio_util::io::StreamReader;
@@ -20,10 +20,11 @@ use tokio_util::io::StreamReader;
 /// Response body of [`Decompression`].
 ///
 /// [`Decompression`]: super::Decompression
-#[pin_project]
+pin_project! {
 pub struct DecompressionBody<B>(#[pin] pub(crate) BodyInner<B>)
 where
     B: Body;
+}
 
 impl<B> DecompressionBody<B>
 where
@@ -115,7 +116,8 @@ where
     }
 }
 
-#[pin_project(project = BodyInnerProj)]
+pin_project! {
+#[project = BodyInnerProj]
 pub(crate) enum BodyInner<B>
 where
     B: Body,
@@ -127,6 +129,7 @@ where
     #[cfg(feature = "decompression-br")]
     Brotli(#[pin] WrapBody<BrotliDecoder<B>>),
     Identity(#[pin] B),
+}
 }
 
 impl<B> Body for DecompressionBody<B>

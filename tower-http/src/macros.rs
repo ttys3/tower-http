@@ -27,8 +27,9 @@ macro_rules! opaque_body {
     };
 
     ($(#[$m:meta])* pub type $name:ident<$($param:ident),*> = $actual:ty;) => {
-        #[pin_project::pin_project]
-        $(#[$m])*
+        pin_project_lite::pin_project! {
+            $(#[$m])*
+        }
         pub struct $name<$($param),*>(#[pin] pub(crate) $actual);
 
         impl<$($param),*> http_body::Body for $name<$($param),*> {
